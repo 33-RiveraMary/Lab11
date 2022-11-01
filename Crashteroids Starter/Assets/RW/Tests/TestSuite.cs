@@ -75,5 +75,18 @@ namespace Tests
             // 3
             Assert.Greater(laser.transform.position.y, initialYPos);
         }
+
+        [UnityTest]
+        public IEnumerator LaserDestroysAsteroid()
+        {
+            // 1
+            GameObject asteroid = game.GetSpawner().SpawnAsteroid();
+            asteroid.transform.position = Vector3.zero;
+            GameObject laser = game.GetShip().SpawnLaser();
+            laser.transform.position = Vector3.zero;
+            yield return new WaitForSeconds(0.1f);
+            // 2
+            UnityEngine.Assertions.Assert.IsNull(asteroid);
+        }
     }
 }
