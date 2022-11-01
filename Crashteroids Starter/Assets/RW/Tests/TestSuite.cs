@@ -8,21 +8,47 @@ namespace Tests
 {
     public class TestSuite
     {
-        // A Test behaves as an ordinary method
-        [Test]
-        public void TestSuiteSimplePasses()
+        private Game game;
+
+        [SetUp]
+        public void Setup()
         {
-            // Use the Assert class to test conditions
+            GameObject gameGameObject =
+                MonoBehaviour.Instantiate(Resources.Load<GameObject>("Prefabs/Game"));
+            game = gameGameObject.GetComponent<Game>();
         }
 
-        // A UnityTest behaves like a coroutine in Play Mode. In Edit Mode you can use
-        // `yield return null;` to skip a frame.
-        [UnityTest]
-        public IEnumerator TestSuiteWithEnumeratorPasses()
+        [TearDown]
+        public void Teardown()
         {
-            // Use the Assert class to test conditions.
-            // Use yield to skip a frame.
-            yield return null;
+            Object.Destroy(game.gameObject);
+        }
+
+        // 1
+        [UnityTest]
+        public IEnumerator AsteroidsMoveDown()
+        {
+            // 3
+            GameObject asteroid = game.GetSpawner().SpawnAsteroid();
+            // 4
+            float initialYPos = asteroid.transform.position.y;
+            // 5
+            yield return new WaitForSeconds(0.1f);
+            // 6
+            Assert.Less(asteroid.transform.position.y, initialYPos);
+        }
+
+        [UnityTest]
+        public IEnumerator GameOverOccursOnAsteroidCollision()
+        {
+            GameObject asteroid = game.GetSpawner().SpawnAsteroid();
+            //1
+            asteroid.transform.position = game.GetShip().transform.position;
+            //2
+            yield return new WaitForSeconds(0.1f);
+
+            //3
+            Assert.True(game.isGameOver);
         }
     }
 }
